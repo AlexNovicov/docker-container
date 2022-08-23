@@ -16,6 +16,7 @@
 
 !www
 www/*
+!www/.ignore
 
 !conf/nginx
 conf/nginx/*

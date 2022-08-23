@@ -1,0 +1,113 @@
+version: "3.9"
+
+services:
+  ### App with PHP-FPM Container #######################################
+
+  pg-app:
+    build:
+      context: ./conf/app
+      dockerfile: Dockerfile
+    container_name: pg-app
+    depends_on:
+      - pg-mariadb
+      - pg-redis
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    volumes:
+      - ./www:/var/www
+      - ./conf/app/php_additional.ini:/usr/local/etc/php/conf.d/additional.ini
+      - ~/.ssh:/home/www-data/.ssh
+    networks:
+      - pg-network
+
+  ### Nginx Server Container ##################################
+
+  pg-nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    depends_on:
+      - pg-app
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8000:8000"
+      - "8080:8080"
+      - "9001:9001"
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      TZ: Europe/Moscow
+    volumes:
+      - ./www:/var/www
+      - ./conf/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./conf/nginx/log:/var/log/nginx
+    networks:
+      - pg-network
+
+  ### MariaDB Container #######################################
+
+  pg-mariadb:
+    image: mariadb:10.2.38-bionic
+    container_name: pg-mariadb
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      TZ: Europe/Moscow
+    volumes:
+      - pg-mariadbdata:/var/lib/mysql
+      - ./conf/mariadb/pg-init.sql:/etc/mysql/pg-init.sql
+    restart: always
+    networks:
+      - pg-network
+
+  ### Redis Container #########################################
+
+  pg-redis:
+    image: redis:alpine
+    container_name: pg-redis
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Europe/Moscow
+    volumes:
+      - pg-redisdata:/data
+      - ./conf/redis/log:/log
+    command: ["redis-server"]
+    restart: always
+    networks:
+      - pg-network
+
+
+  ### MongoDB Container ########################################
+
+  pg-mongo:
+    image: mongo
+    container_name: pg-mongo
+    restart: always
+    volumes:
+      - pg-mongodata:/var/lib/mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 12345678
+    ports:
+      - "27017:27017"
+    networks:
+      - pg-network
+    command: [--auth]
+
+#Docker Networks
+networks:
+  pg-network:
+    driver: bridge
+#Volumes
+volumes:
+  pg-mariadbdata:
+   driver: local
+  pg-redisdata:
+    driver: local
+  pg-mongodata:
+    driver: local

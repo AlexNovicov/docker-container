@@ -1,0 +1,10 @@
+CREATE USER 'test'@'localhost' IDENTIFIED BY '12345678';
+GRANT ALL PRIVILEGES ON * . * TO 'test'@'localhost';
+FLUSH PRIVILEGES;
+
+CREATE DATABASE vsesdal;
+CREATE DATABASE guldog;
+CREATE DATABASE murchalkin;
+CREATE DATABASE nyanyaryadom;
+CREATE DATABASE ms_crm;
+CREATE DATABASE ms_auth;

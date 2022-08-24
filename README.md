@@ -39,7 +39,7 @@
 - `exit`
 
 Для доступа в консоль mysql выполнить:
-- `mysql -u root -p12345678 < /etc/mysql/pg-init.sql`
+- `mysql -u root -p12345678`
 
 ### Установка проекта
 
@@ -53,7 +53,7 @@
 DB_CONNECTION=mysql
 DB_HOST=pg-mariadb
 DB_PORT=3306
-DB_DATABASE=guldog
+DB_DATABASE=databasename
 DB_USERNAME=test
 DB_PASSWORD=12345678
 MONGODB_HOST=pg-mongo

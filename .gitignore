@@ -17,11 +17,3 @@
 !www
 www/*
 !www/.ignore
-
-!conf/nginx
-conf/nginx/*
-!conf/nginx/conf.d/default.conf
-!conf/nginx/conf.d/vsesdal.conf
-!conf/nginx/conf.d/guldog.conf
-!conf/nginx/conf.d/murchalkin.conf
-!conf/nginx/conf.d/nyanyaryadom.conf

@@ -33,17 +33,20 @@ RUN apk update \
     tidyhtml \
     freetype libpng libjpeg-turbo \
     git \
-    nodejs \
+    nodejs npm \
     yarn \
     openssh \
     libcurl curl-dev openssl openssl-dev \
+    nano \
+    go \
     && apk add --update --no-cache --virtual .build-ext-deps $PHP_INSTALL_EXT_DEPS \
     && docker-php-ext-configure zip \
     && docker-php-ext-configure imap --with-imap --with-imap-ssl \
     && docker-php-ext-configure opcache --enable-opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) pdo_mysql zip intl imap tidy pcntl opcache bcmath gd exif \
-    && apk del .build-ext-deps
+    && docker-php-ext-install -j$(nproc) pdo_mysql zip intl imap tidy pcntl opcache bcmath gd exif sockets \
+    && apk del .build-ext-deps \
+    && npm install --global expo-cli chokidar
 
 # Pecl install
 RUN apk add --no-cache \
@@ -66,5 +69,5 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 USER www-data
 
 # Exxpose port 9000 and start php-fpm server
-EXPOSE 9000
+EXPOSE 9000 8000
 CMD ["php-fpm"]

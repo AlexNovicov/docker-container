@@ -14,10 +14,13 @@ services:
     restart: unless-stopped
     tty: true
     working_dir: /var/www
+    ports:
+      - "8000:8000"
     volumes:
       - ./www:/var/www
       - ./conf/app/php_additional.ini:/usr/local/etc/php/conf.d/additional.ini
       - ~/.ssh:/home/www-data/.ssh
+      - ./conf/app/.profile:/home/www-data/.profile
     networks:
       - pg-network
 
@@ -25,7 +28,7 @@ services:
 
   pg-nginx:
     image: nginx:stable-alpine
-    container_name: nginx
+    container_name: pg-nginx
     depends_on:
       - pg-app
     restart: unless-stopped
@@ -33,8 +36,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8000:8000"
-      - "8080:8080"
+      #- "8000:8000"
+      #- "8080:8080"
       - "9001:9001"
     environment:
       MYSQL_ROOT_PASSWORD: 12345678
@@ -98,6 +101,20 @@ services:
     networks:
       - pg-network
     command: [--auth]
+
+  ### App with PHP-FPM Container #######################################
+
+  pg-krakend:
+    image: devopsfaith/krakend
+    container_name: pg-krakend
+    environment:
+      KRAKEND_PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./conf/krakend:/etc/krakend
+    networks:
+      - pg-network
 
 #Docker Networks
 networks:

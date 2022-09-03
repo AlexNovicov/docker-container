@@ -1,4 +1,5 @@
 export NODE_PATH=`npm root -g`
+export PATH="$PATH:/home/www-data/bin"
 
 alias ga='git add --all '
 alias gc='git commit'

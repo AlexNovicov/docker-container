@@ -1,0 +1,5 @@
+#!/bin/ash
+php artisan ide-helper:models -N;
+php artisan ide-helper:generate;
+php artisan ide-helper:meta;
+php artisan lighthouse:ide-helper;

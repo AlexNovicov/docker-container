@@ -21,6 +21,7 @@ services:
       - ./conf/app/php_additional.ini:/usr/local/etc/php/conf.d/additional.ini
       - ~/.ssh:/home/www-data/.ssh
       - ./conf/app/.profile:/home/www-data/.profile
+      - ./conf/app/bin:/home/www-data/bin
     networks:
       - pg-network
 

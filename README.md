@@ -90,43 +90,4 @@
 
 В контейнере установлен весь необходимый софт для работы. Так же в контейнере уже пошарены ваши ssh ключи и gitconfig.
 
-### **8.1. Установка проекта vsesdal.com**
-
-1. Находясь в дирректории /var/www
-
-    `git clone git@gitlab.profilancegroup-tech.com:vsesdal/vsesdal.git vsesdal` 
-
-2. Необходимо перейти в дирректорию проекта Laravel
-
-    `cd vsesdal/main` 
-
-3. Установка проекта Laravel
-
-    `composer create-project`  
-
-4. Открыть .env и добавить/изменить настройки
-
-```
-DB_CONNECTION=mysql
-DB_HOST=pg-mariadb
-DB_PORT=3306
-DB_DATABASE=vsesdal
-DB_USERNAME=profilancegroup
-DB_PASSWORD=12345678
-
-MONGODB_HOST=pg-mongo
-MONGODB_USERNAME=root
-MONGODB_PASSWORD=12345678
-
-REDIS_HOST=pg-redis
-```
-
-5. Применение миграций и сидов (todo сиды)
-
-    `php artisan migrate`
-
-6. Установка и билд фронта
-
-    `yarn install`
-
-    `yarn run dev`
+Инструкция по установке каждого проекта находится в readme.md самого проекта.

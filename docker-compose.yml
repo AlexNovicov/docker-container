@@ -49,7 +49,7 @@ services:
       TZ: ${WORKSPACE_TIMEZONE}
     volumes:
       - ./www:/var/www
-      - ./conf/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d
       - ./conf/nginx/log:/var/log/nginx
     networks:
       - pg-network
@@ -119,7 +119,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - pg-mongo-data:/var/lib/mongodb
+      - pg-mongo-data:/data/db
+      - pg-mongo-configdb:/data/configdb
     command: [--auth]
     networks:
       - pg-network
@@ -155,9 +156,11 @@ services:
     networks:
       - pg-network
 
+
 ## Docker Networks
 
 networks:
+
   pg-network:
     driver: bridge
 
@@ -165,9 +168,15 @@ networks:
 ## Volumes
 
 volumes:
+
   pg-mariadb-data:
    driver: local
+
   pg-redis-data:
     driver: local
+
   pg-mongo-data:
+    driver: local
+
+  pg-mongo-configdb:
     driver: local

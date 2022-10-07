@@ -19,3 +19,5 @@ www/*
 !www/.ignore
 
 .idea
+
+.env

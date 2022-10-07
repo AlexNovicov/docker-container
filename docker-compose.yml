@@ -1,48 +1,52 @@
 version: "3.9"
 
+## Services
+
 services:
-  ### App with PHP-FPM Container #######################################
+
+  ######## App with PHP-FPM Container ########
 
   pg-app:
     build:
       context: ./conf/app
       dockerfile: Dockerfile
+      args:
+        TZ: ${WORKSPACE_TIMEZONE}
     container_name: pg-app
-    depends_on:
-      - pg-mariadb
-      - pg-redis
     restart: unless-stopped
     tty: true
     working_dir: /var/www
     ports:
-      - "8000:8000"
+      - "${APP_PORT}:8000"
+    depends_on:
+      - pg-mariadb
+      - pg-redis
+    environment:
+      TZ: ${WORKSPACE_TIMEZONE}
     volumes:
       - ./www:/var/www
       - ./conf/app/php_additional.ini:/usr/local/etc/php/conf.d/additional.ini
-      - ~/.ssh:/home/www-data/.ssh
       - ./conf/app/.profile:/home/www-data/.profile
       - ./conf/app/bin:/home/www-data/bin
+      - ~/.ssh:/home/www-data/.ssh
+      - ~/.gitconfig:/home/www-data/.gitconfig
     networks:
       - pg-network
 
-  ### Nginx Server Container ##################################
+
+  ######## Nginx Server Container ########
 
   pg-nginx:
     image: nginx:stable-alpine
     container_name: pg-nginx
-    depends_on:
-      - pg-app
     restart: unless-stopped
     tty: true
     ports:
-      - "80:80"
-      - "443:443"
-      #- "8000:8000"
-      #- "8080:8080"
-      - "9001:9001"
+      - "${NGINX_PORT}:80"
+    depends_on:
+      - pg-app
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      TZ: Europe/Moscow
+      TZ: ${WORKSPACE_TIMEZONE}
     volumes:
       - ./www:/var/www
       - ./conf/nginx/conf.d/:/etc/nginx/conf.d/
@@ -50,35 +54,52 @@ services:
     networks:
       - pg-network
 
-  ### MariaDB Container #######################################
+
+  ######## MariaDB Container ########
 
   pg-mariadb:
     image: mariadb:10.2.38-bionic
     container_name: pg-mariadb
+    restart: always
     tty: true
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT}:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      TZ: Europe/Moscow
+      TZ: ${WORKSPACE_TIMEZONE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - pg-mariadbdata:/var/lib/mysql
+      - pg-mariadb-data:/var/lib/mysql
       - ./conf/mariadb/pg-init.sql:/etc/mysql/pg-init.sql
-    restart: always
     networks:
       - pg-network
 
-  ### Redis Container #########################################
+
+  ######## phpMyAdmin Container ########
+
+  pg-phpmyadmin:
+    image: phpmyadmin
+    container_name: pg-phpmyadmin
+    restart: always
+    ports:
+      - "${PHPMYADMIN_PORT}:80"
+    environment:
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 512M
+    networks:
+      - pg-network
+
+
+  ######## Redis Container ########
 
   pg-redis:
     image: redis:alpine
     container_name: pg-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     environment:
-      TZ: Europe/Moscow
+      TZ: ${WORKSPACE_TIMEZONE}
     volumes:
-      - pg-redisdata:/data
+      - pg-redis-data:/data
       - ./conf/redis/log:/log
     command: ["redis-server"]
     restart: always
@@ -86,46 +107,67 @@ services:
       - pg-network
 
 
-  ### MongoDB Container ########################################
+  ######## MongoDB Container ########
 
   pg-mongo:
     image: mongo
     container_name: pg-mongo
     restart: always
-    volumes:
-      - pg-mongodata:/var/lib/mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 12345678
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - pg-mongo-data:/var/lib/mongodb
+    command: [--auth]
     networks:
       - pg-network
-    command: [--auth]
 
-  ### App with PHP-FPM Container #######################################
+
+  ######## MongoDB Express Container ########
+
+  pg-mongo-express:
+    image: mongo-express
+    container_name: pg-mongo-express
+    restart: always
+    ports:
+      - "${MONGO_EXPRESS_PORT}:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@pg-mongo:${MONGO_PORT}/
+    networks:
+      - pg-network
+
+
+  ######## KrakenD Container ########
 
   pg-krakend:
     image: devopsfaith/krakend
     container_name: pg-krakend
-    environment:
-      KRAKEND_PORT: 8080
     ports:
-      - "8080:8080"
+      - "${KRAKEND_PORT}:${KRAKEND_PORT}"
+    environment:
+      KRAKEND_PORT: ${KRAKEND_PORT}
     volumes:
       - ./conf/krakend:/etc/krakend
     networks:
       - pg-network
 
-#Docker Networks
+## Docker Networks
+
 networks:
   pg-network:
     driver: bridge
-#Volumes
+
+
+## Volumes
+
 volumes:
-  pg-mariadbdata:
+  pg-mariadb-data:
    driver: local
-  pg-redisdata:
+  pg-redis-data:
     driver: local
-  pg-mongodata:
+  pg-mongo-data:
     driver: local

@@ -1,5 +1,5 @@
-CREATE USER 'test'@'%' IDENTIFIED BY '12345678';
-GRANT ALL PRIVILEGES ON * . * TO 'test'@'%';
+CREATE USER 'profilancegroup'@'%' IDENTIFIED BY '12345678';
+GRANT ALL PRIVILEGES ON * . * TO 'profilancegroup'@'%';
 FLUSH PRIVILEGES;
 
 CREATE DATABASE vsesdal;

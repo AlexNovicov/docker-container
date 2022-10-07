@@ -11,7 +11,7 @@ RUN apk add --no-cache tzdata \
 # Установка пакетов
 RUN apk update
 
-RUN apk add --no-cache libzip icu imap c-client tidyhtml freetype libpng libjpeg-turbo git nodejs npm yarn openssh libcurl curl-dev openssl openssl-dev nano go
+RUN apk add --no-cache libzip icu imap c-client tidyhtml freetype libpng libjpeg-turbo ncurses build-base git nodejs npm yarn openssh libcurl curl-dev openssl openssl-dev nano go bash
 
 RUN apk add --update --no-cache --virtual .build-ext-deps libzip-dev icu-dev imap-dev openssl-dev tidyhtml-dev freetype-dev libjpeg-turbo-dev libpng-dev  \
     && docker-php-ext-configure zip \
@@ -20,6 +20,13 @@ RUN apk add --update --no-cache --virtual .build-ext-deps libzip-dev icu-dev ima
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) pdo_mysql zip intl imap tidy pcntl opcache bcmath gd exif sockets \
     && apk del .build-ext-deps 
+
+# Установка python3
+ENV PYTHONUNBUFFERED=1
+RUN apk add --update --no-cache python3 \
+    && ln -sf python3 /usr/bin/python \
+    && python3 -m ensurepip \
+    && pip3 install --no-cache --upgrade pip setuptools
 
 # Установка npm пакетов
 RUN npm install --global expo-cli chokidar

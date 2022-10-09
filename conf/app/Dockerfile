@@ -15,7 +15,6 @@ RUN apk add --no-cache \
     bash \
     openssh \
     openssl \
-    openssl-dev \
     icu \
     imap \
     c-client \
@@ -52,7 +51,7 @@ RUN apk add --no-cache \
     go
 
 # Установка пакетов
-RUN apk add --update --no-cache --virtual .build-ext-deps \
+RUN apk add --update --no-cache --virtual .build-deps-1 \
     \
     # Dev пакеты
     libzip-dev \
@@ -108,10 +107,13 @@ RUN apk add --update --no-cache --virtual .build-ext-deps \
         pgsql \
         pdo \
         mysqli \
-    && apk del .build-ext-deps 
+    && apk del .build-deps-1
 
 # Установка pecl пакетов
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+RUN apk add --no-cache --virtual .build-deps-2 \
+        $PHPIZE_DEPS \
+        openssl-dev \
+        zlib-dev \
     && pecl install \
         redis \
         xdebug \
@@ -121,17 +123,21 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         xdebug \
         mongodb \
     && rm -rf /tmp/pear \
-    && apk del -f .build-deps
+    && apk del -f .build-deps-2
 
 # Установка python3
 ENV PYTHONUNBUFFERED=1
 RUN apk add --update --no-cache python3 \
     && ln -sf python3 /usr/bin/python \
     && python3 -m ensurepip \
-    && pip3 install --no-cache --upgrade pip setuptools
+    && pip3 install --no-cache --upgrade \
+        pip \
+        setuptools
 
 # Установка npm пакетов
-RUN npm install --global expo-cli chokidar
+RUN npm install --global \
+    expo-cli \
+    chokidar
 
 # Установка конфигурации
 RUN cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"

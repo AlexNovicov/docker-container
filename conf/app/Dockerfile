@@ -40,6 +40,7 @@ RUN set -eux \
         ncurses \
         build-base \
         procps \
+        bind-tools \
         make \
         nano \
         vim \

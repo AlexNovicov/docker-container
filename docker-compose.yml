@@ -18,6 +18,7 @@ services:
     working_dir: /var/www
     ports:
       - "${APP_PORT}:8000"
+      - "${APP_VITE_PORT}:5173"
     depends_on:
       - pg-mariadb
       - pg-redis

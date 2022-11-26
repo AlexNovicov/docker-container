@@ -152,7 +152,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 USER www-data
 
 # Порты
-EXPOSE 9000 8000
+EXPOSE 9000 8000 5173
 
 # Старт php-fpm
 CMD ["php-fpm"]

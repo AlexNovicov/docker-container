@@ -70,7 +70,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - pg-mariadb-data:/var/lib/mysql
-      - ./conf/mariadb/pg-init.sql:/etc/mysql/pg-init.sql
+      - ./conf/mariadb:/etc/mysql/sql
     networks:
       - pg-network
 

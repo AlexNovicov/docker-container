@@ -48,7 +48,7 @@
 
 2. Выполнение заготовленного sql запроса:
 
-    `mysql -u root -p12345678 < /etc/mysql/pg-init.sql`
+    `mysql -u root -p12345678 < /etc/mysql/sql/pg-init.sql`
 
 3. Завершение ssh сессии:
 

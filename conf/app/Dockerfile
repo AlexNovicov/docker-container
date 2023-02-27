@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.1-fpm-alpine3.16
 
 ARG TZ
 
@@ -17,6 +17,8 @@ RUN set -eux \
         openssl \
         icu \
         imap \
+        nmap \
+        linux-headers \
         c-client \
         ca-certificates \
         tidyhtml \

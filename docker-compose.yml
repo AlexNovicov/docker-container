@@ -50,6 +50,7 @@ services:
       TZ: ${WORKSPACE_TIMEZONE}
     volumes:
       - ./www:/var/www
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./conf/nginx/conf.d:/etc/nginx/conf.d
       - ./conf/nginx/log:/var/log/nginx
     networks:
@@ -59,7 +60,7 @@ services:
   ######## MariaDB Container ########
 
   pg-mariadb:
-    image: mariadb:10.2.38-bionic
+    image: mariadb:10.11-rc
     container_name: pg-mariadb
     restart: always
     tty: true
@@ -93,7 +94,7 @@ services:
   ######## Redis Container ########
 
   pg-redis:
-    image: redis:alpine
+    image: redis:alpine3.16
     container_name: pg-redis
     ports:
       - "${REDIS_PORT}:6379"
@@ -157,6 +158,20 @@ services:
     networks:
       - pg-network
 
+  ######## Meilisearch Container ########
+
+  pg-meilisearch:
+    image: getmeili/meilisearch:v0.26.1
+    container_name: pg-meilisearch
+    ports:
+      - "${MEILISEARCH_PORT}:7700"
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
+    volumes:
+      - pg-meilisearch:/meili_data
+    networks:
+      - pg-network
+
 
 ## Docker Networks
 
@@ -180,4 +195,7 @@ volumes:
     driver: local
 
   pg-mongo-configdb:
+    driver: local
+
+  pg-meilisearch:
     driver: local

@@ -13,6 +13,7 @@ RUN set -eux \
 RUN set -eux \
     && apk add --no-cache \
         bash \
+        autoconf \
         openssh \
         openssl \
         icu \
@@ -122,10 +123,14 @@ RUN set -eux \
         redis \
         xdebug \
         mongodb \
+        protobuf \
+        grpc \
     && docker-php-ext-enable \
         redis \
         xdebug \
         mongodb \
+        protobuf \
+        grpc \
     && rm -rf /tmp/pear \
     && apk del -f .build-deps-2
 

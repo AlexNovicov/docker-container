@@ -123,13 +123,13 @@ RUN set -eux \
         redis \
         xdebug \
         mongodb \
-        protobuf \
+        # protobuf \
         grpc \
     && docker-php-ext-enable \
         redis \
         xdebug \
         mongodb \
-        protobuf \
+        # protobuf \
         grpc \
     && rm -rf /tmp/pear \
     && apk del -f .build-deps-2

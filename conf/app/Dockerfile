@@ -111,6 +111,8 @@ RUN set -eux \
             pgsql \
             pdo \
             mysqli \
+        && pecl install imagick \
+        && docker-php-ext-enable imagick \
         && apk del .build-deps-1
 
 # Установка pecl пакетов

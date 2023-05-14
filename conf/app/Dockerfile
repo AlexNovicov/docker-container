@@ -51,7 +51,8 @@ RUN set -eux \
         nodejs \
         npm \
         yarn \
-        go
+        go \
+        libwebp-tools
 
 # Установка пакетов
 RUN set -eux \
@@ -111,8 +112,6 @@ RUN set -eux \
             pgsql \
             pdo \
             mysqli \
-        && pecl install imagick \
-        && docker-php-ext-enable imagick \
         && apk del .build-deps-1
 
 # Установка pecl пакетов
@@ -121,18 +120,21 @@ RUN set -eux \
         $PHPIZE_DEPS \
         openssl-dev \
         zlib-dev \
+        imagemagick-dev \
     && pecl install \
         redis \
         xdebug \
         mongodb \
         # protobuf \
-        grpc \
+        # grpc \
+        imagick \
     && docker-php-ext-enable \
         redis \
         xdebug \
         mongodb \
         # protobuf \
-        grpc \
+        # grpc \
+        imagick \
     && rm -rf /tmp/pear \
     && apk del -f .build-deps-2
 
@@ -144,7 +146,8 @@ RUN set -eux \
     && python3 -m ensurepip \
     && pip3 install --no-cache --upgrade \
         pip \
-        setuptools
+        setuptools \
+        virtualenv
 
 # Установка npm пакетов
 RUN npm install --global \

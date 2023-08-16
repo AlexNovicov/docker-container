@@ -16,4 +16,5 @@
 127.0.0.1 ms-crm.loc
 127.0.0.1 ms-auth.loc
 127.0.0.1 phpmyadmin.loc
+127.0.0.1 pg-platform.loc api.pg-platform.loc
 # PG - end

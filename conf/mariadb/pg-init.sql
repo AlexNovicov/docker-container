@@ -9,3 +9,4 @@ CREATE DATABASE nyanyaryadom;
 CREATE DATABASE ms_crm;
 CREATE DATABASE ms_auth;
 CREATE DATABASE numma;
+CREATE DATABASE pg_platform;

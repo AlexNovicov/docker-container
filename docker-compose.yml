@@ -17,7 +17,6 @@ services:
     tty: true
     working_dir: /var/www
     ports:
-      - "${APP_PORT}:8000"
       - "${APP_VITE_PORT}:5173"
     depends_on:
       - pg-mariadb
@@ -64,10 +63,10 @@ services:
     container_name: pg-mariadb
     restart: always
     tty: true
-    ports:
-      - "${MYSQL_PORT}:3306"
+    # ports:
+    #   - "${MYSQL_PORT}:3306" # Отключен внешний доступ
     environment:
-      TZ: ${WORKSPACE_TIMEZONE}
+      TZ: ${WORKSPACE_TIMEZONE} 
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - pg-mariadb-data:/var/lib/mysql
@@ -96,8 +95,8 @@ services:
   pg-redis:
     image: redis:alpine3.16
     container_name: pg-redis
-    ports:
-      - "${REDIS_PORT}:6379"
+    # ports:
+    #   - "${REDIS_PORT}:6379" # Отключен внешний доступ
     environment:
       TZ: ${WORKSPACE_TIMEZONE}
     volumes:
@@ -115,8 +114,8 @@ services:
     image: mongo
     container_name: pg-mongo
     restart: always
-    ports:
-      - "${MONGO_PORT}:27017"
+    # ports:
+    #   - "${MONGO_PORT}:27017" # Отключен внешний доступ
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -149,8 +148,8 @@ services:
   pg-krakend:
     image: devopsfaith/krakend
     container_name: pg-krakend
-    ports:
-      - "${KRAKEND_PORT}:${KRAKEND_PORT}"
+    # ports:
+    #   - "${KRAKEND_PORT}:${KRAKEND_PORT}" # Отключен внешний доступ
     environment:
       KRAKEND_PORT: ${KRAKEND_PORT}
     volumes:
@@ -163,8 +162,8 @@ services:
   pg-meilisearch:
     image: getmeili/meilisearch:v0.26.1
     container_name: pg-meilisearch
-    ports:
-      - "${MEILISEARCH_PORT}:7700"
+    # ports:
+    #   - "${MEILISEARCH_PORT}:7700" # Отключен внешний доступ
     environment:
       MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
     volumes:

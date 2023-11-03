@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine3.16
+FROM php:8.1-fpm-alpine3.18
 
 ARG TZ
 
@@ -52,7 +52,8 @@ RUN set -eux \
         npm \
         yarn \
         go \
-        libwebp-tools
+        libwebp-tools \
+        lz4
 
 # Установка пакетов
 RUN set -eux \
@@ -141,7 +142,7 @@ RUN set -eux \
 # Установка python3
 ENV PYTHONUNBUFFERED=1
 RUN set -eux \
-    && apk add --no-cache python3 \
+    && apk add --no-cache python3 python3-dev \
     && ln -sf python3 /usr/bin/python \
     && python3 -m ensurepip \
     && pip3 install --no-cache --upgrade \

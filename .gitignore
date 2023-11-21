@@ -15,17 +15,9 @@
 /.fleet
 /.idea
 
-
-# www
-!www
-www/*
-!www/.ignore
-
-
 # env
 .env*
 !.env.example
-
 
 # TMP
 /conf/nginx/log

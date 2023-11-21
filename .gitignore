@@ -1,4 +1,9 @@
-### vscode ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -6,18 +11,22 @@
 !.vscode/extensions.json
 *.code-workspace
 
-# Whitelist some files
-!.gitignore
-!README.md
+### ide
+/.fleet
+/.idea
 
-# Ignore all files named .DS_Store or ending with .log
-**/.DS_Store
-**.log
 
+# www
 !www
 www/*
 !www/.ignore
 
-.idea
 
-.env
+# env
+.env*
+!.env.example
+
+
+# TMP
+/conf/nginx/log
+/conf/redis/log

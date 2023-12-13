@@ -19,6 +19,7 @@ RUN set -eux \
         shadow \
         openssh \
         openssl \
+        bash \
         linux-headers \
         freetype \
         icu \

@@ -1,24 +1,30 @@
-# Profilance Group server docker contaner
+# ProfilanceGroup server docker contaner
 
 
 ## **1. Установка Docker**
 
 1. Для работы требуется [установить докер](https://www.docker.com/) на уровне операционной системы ([для MacBook M1](https://docs.docker.com/docker-for-mac/apple-m1/)).
-2. Клонировать данный репозиторий. Рекомендуется клонировать в папку с определенным называние, так как она будет использоваться в качстве названия контейнера и префиксов. В примере ниже клонирование репозитория в папку profilancegroup.
+2. Клонировать данный репозиторий. В примере ниже клонирование репозитория в папку profilancegroup.
 
-`git clone git@gitlab.profilancegroup-tech.com:tools/docker-server.git profilancegroup`
+```
+git clone git@gitlab.profilancegroup-tech.com:tools/docker-server.git profilancegroup
+```
 
 ## **2. Настройка .env**
 
 Нужно перейти в дирректориию клонированного репозитория и выполнить команду:
 
-`cp .env.example .env`
+```
+cp .env.example .env
+```
 
 ## **3. Сборка образов и запуск контейнеров**
 
 Находясь в директории клонированного репозитория выполнить команду:
 
-`docker-compose up -d --build`
+```
+docker-compose up -d --build
+```
 
 Данная команда соберет образы и запустит контейнеры.
 
@@ -26,8 +32,13 @@
 
 Опция --build делает сборку перез запуском.
 
-При обновлении docker конфигурации нужно будет заново провести сборку образа.
+При обновлении docker конфигурации нужно будет заново провести сборку образа, для этого нужно выполнить:
 
+
+```
+docker-compose down
+docker-compose up -d --build
+```
 
 
 ## **4. Настройка хостов**
@@ -44,37 +55,54 @@
 
 1. Подключение по ssh в контейнер с mariadb:
 
-    `docker exec -it pg-mariadb sh`
+```
+docker exec -it pg-mariadb sh
+```
 
 2. Выполнение заготовленного sql запроса:
 
-    `mysql -u root -p12345678 < /etc/mysql/sql/pg-init.sql`
+```
+mysql -u root -p12345678 < /etc/mysql/sql/pg-init.sql
+```
 
 3. Завершение ssh сессии:
 
-    `exit`
+```
+exit
+```
 
 Для доступа в консоль mysql:
 
-`mysql -u root -p12345678`
+```
+mysql -u root -p12345678`
+```
 
 ## **6. Софт**
 
 ### **6.1. phpMyAdmin**
 
-Адрес клиента: http://localhost:8010/
+http://localhost:8010/
 
 
 ```
-Пользователь: profilancegroup
+Пользователь: root
 Пароль: 12345678
 ```
 
 ### **6.2. Mongo Express**
 
-Адрес клиента: http://localhost:8011/
+http://localhost:8011/
 
-### **6.3. PHPStorm**
+```
+Пользователь: root
+Пароль: 12345678
+```
+
+### **6.3. Mailpit**
+
+http://localhost:8012/
+
+### **6.4. PHPStorm**
 
 В PHPStorm проекты открывать из директории www этого репозитория и работать как обычно. Можно перенести из других мест проекты, чтобы они работали в контейнере, либо скопировать их, либо клонировать заново.
 
@@ -82,11 +110,16 @@
 
 Подключение к контейнеру с проектами по ssh:
 
-`docker exec -it pg-app sh '-l'` 
+```
+docker exec -it pg-app sh '-l'
+``` 
 
 Для удобства можно добавить алиас:
 
-`alias pg-docker-app="docker exec -it pg-app sh '-l'"`
+
+```
+lias pg-docker-app="docker exec -it pg-app sh '-l'"
+```
 
 Сразу же после логина по ssh по умолчанию будет открыта /var/www, Данная директория шарится с локальной директорией www из данного репозитория.
 В директории /var/www должны находиться все проекты.

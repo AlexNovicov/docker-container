@@ -4,7 +4,7 @@ version: "3.9"
 
 services:
 
-  ### App (php, nodejs, python)
+  ### App (php, nodejs, python) (ports: php-fpm 9000, octane 8000, vite 5173)
 
   pg-app:
     build:
@@ -19,7 +19,7 @@ services:
     tty: true
     working_dir: /var/www
     ports:
-      - "${APP_VITE_PORT}:5173"
+      - "${APP_VITE_PORT:-5173}:5173"
     depends_on:
       - pg-mariadb
       - pg-redis
@@ -36,7 +36,7 @@ services:
       - pg-network
 
 
-  ### Nginx
+  ### Nginx (ports: nginx 80)
 
   pg-nginx:
     image: nginx:stable-alpine
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "${NGINX_PORT}:80"
+      - "${NGINX_PORT:-80}:80"
     depends_on:
       - pg-app
     environment:
@@ -58,15 +58,13 @@ services:
       - pg-network
 
 
-  ### MariaDB
+  ### MariaDB (ports: mysql 3306)
 
   pg-mariadb:
     image: mariadb:10.11-rc
     container_name: pg-mariadb
     restart: unless-stopped
     tty: true
-    # ports:
-    #   - "${MYSQL_PORT}:3306"
     environment:
       TZ: ${WORKSPACE_TIMEZONE} 
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -77,22 +75,7 @@ services:
       - pg-network
 
 
-  ### phpMyAdmin
-
-  pg-phpmyadmin:
-    image: phpmyadmin:5.2
-    container_name: pg-phpmyadmin
-    restart: unless-stopped
-    ports:
-      - "${PHPMYADMIN_PORT}:80"
-    environment:
-      PMA_HOST: pg-mariadb
-      UPLOAD_LIMIT: 512M
-    networks:
-      - pg-network
-
-
-  ### Redis
+  ### Redis (ports: redis 6379)
 
   pg-redis:
     image: redis:alpine3.18
@@ -108,14 +91,12 @@ services:
       - pg-network
 
 
-  ### MongoDB
+  ### MongoDB (ports: mongodb 27017)
 
   pg-mongo:
     image: mongo:7.0.2
     container_name: pg-mongo
     restart: unless-stopped
-    # ports:
-    #   - "${MONGO_PORT}:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -127,39 +108,21 @@ services:
       - pg-network
 
 
-  ### MongoDB Express
-
-  pg-mongo-express:
-    image: mongo-express:1.0.0-20-alpine3.18
-    container_name: pg-mongo-express
-    restart: unless-stopped
-    ports:
-      - "${MONGO_EXPRESS_PORT}:8081"
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@pg-mongo:27017/
-    networks:
-      - pg-network
-
-
-  ### KrakenD
+  ### KrakenD (ports: krakend 8080)
 
   pg-krakend:
     image: devopsfaith/krakend:2.5
     container_name: pg-krakend
     restart: unless-stopped
     environment:
-      KRAKEND_PORT: ${KRAKEND_PORT}
+      KRAKEND_PORT: ${KRAKEND_PORT:-8080}
     volumes:
       - ./krakend:/etc/krakend
     networks:
       - pg-network
 
 
-  ### Meilisearch
+  ### Meilisearch (ports: meilisearch 7700)
 
   pg-meilisearch:
     image: getmeili/meilisearch:v0.26.1
@@ -173,7 +136,58 @@ services:
       - pg-network
 
 
-## Docker Networks
+  ### phpMyAdmin (ports: gui 80)
+
+  pg-phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: pg-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "${PHPMYADMIN_PORT:-8010}:80"
+    environment:
+      PMA_HOST: pg-mariadb
+      UPLOAD_LIMIT: 512M
+    networks:
+      - pg-network
+
+  ### MongoDB Express (ports: gui 8081)
+
+  pg-mongo-express:
+    image: mongo-express:1.0.0-20-alpine3.18
+    container_name: pg-mongo-express
+    restart: unless-stopped
+    ports:
+      - "${MONGO_EXPRESS_PORT:-8011}:8081"
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@pg-mongo:27017/
+    networks:
+      - pg-network
+
+
+  ### Mailpit (ports: smtp 1025, gui 8025)
+
+  pg-mailpit:
+    image: axllent/mailpit
+    container_name: pg-mailpit
+    restart: unless-stopped
+    volumes:
+      - pg-mailpit:/data
+    ports:
+      - "${MAILPIT_PORT:-8012}:8025"
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_DATA_FILE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - pg-network
+
+
+## Networks
 
 networks:
 
@@ -198,4 +212,7 @@ volumes:
     driver: local
 
   pg-meilisearch:
+    driver: local
+
+  pg-mailpit:
     driver: local
